@@ -1,6 +1,10 @@
 streamlit
-torch
+torch>=2.0
 torchvision
+opencv-python==4.8.1.78
 numpy
 Pillow
-opencv-python
+segmentation-models-pytorch
+albumentations
+matplotlib
+python-3.12
