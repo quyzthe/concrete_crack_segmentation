@@ -14,7 +14,7 @@ from unetutils import (
 
 # Khởi tạo model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-checkpoint_path = 'D:/Python_Projects/chuyen_de_datn/checkpoint_best.pt'
+checkpoint_path = 'checkpoint_best.pt'
 model = create_and_load_unet_model(checkpoint_path, device)
 
 transform_img = transforms.Compose([
