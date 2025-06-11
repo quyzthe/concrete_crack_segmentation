@@ -2,7 +2,7 @@ streamlit
 torch>=2.0
 torchvision
 opencv-python==4.8.1.78
-numpy
+numpy<2
 Pillow
 segmentation-models-pytorch
 albumentations
