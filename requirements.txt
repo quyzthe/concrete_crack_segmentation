@@ -7,4 +7,3 @@ Pillow
 segmentation-models-pytorch
 albumentations
 matplotlib
-python-3.12
