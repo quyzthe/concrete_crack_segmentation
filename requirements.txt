@@ -7,4 +7,3 @@ Pillow
 segmentation-models-pytorch
 albumentations
 matplotlib
-libgl1
