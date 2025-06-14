@@ -19,13 +19,14 @@ st.set_page_config(
     layout="wide"
 )
 
-# ==== CUSTOM CSS ==== #
+# ==== CUSTOM CSS WITH BACKGROUND IMAGE AND FLOATING ICONS ==== #
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap');
     html, body, [class*="css"] {
         font-family: 'Be Vietnam Pro', sans-serif;
-        background: linear-gradient(to bottom, #ffffff 0%, #e6f0ff 100%);
+        background: url('https://www.transparenttextures.com/patterns/cubes.png');
+        background-color: #f4f9ff;
         color: #222;
     }
     .block-container {
@@ -34,13 +35,13 @@ st.markdown("""
     .file-info {
         background-color: #e3f2fd;
         padding: 1rem;
-        border-radius: 10px;
+        border-radius: 12px;
         border: 1px solid #64b5f6;
-        font-size: 17px;
+        font-size: 18px;
         margin-bottom: 1.5rem;
         color: #0d47a1;
         font-weight: 500;
-        box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.08);
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
     }
     .footer {
         margin-top: 3rem;
@@ -59,7 +60,25 @@ st.markdown("""
         margin-top: 8px;
         color: #0d47a1;
     }
+    .icon-float {
+        position: fixed;
+        animation: float 6s ease-in-out infinite;
+        z-index: 0;
+        opacity: 0.08;
+    }
+    .icon1 { top: 20px; left: 40px; width: 40px; }
+    .icon2 { top: 70%; right: 30px; width: 50px; animation-delay: 2s; }
+    .icon3 { bottom: 20px; left: 50%; width: 45px; animation-delay: 4s; }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+        100% { transform: translateY(0px); }
+    }
     </style>
+    <img src="https://cdn-icons-png.flaticon.com/512/3771/3771522.png" class="icon-float icon1">
+    <img src="https://cdn-icons-png.flaticon.com/512/4228/4228727.png" class="icon-float icon2">
+    <img src="https://cdn-icons-png.flaticon.com/512/3222/3222800.png" class="icon-float icon3">
 """, unsafe_allow_html=True)
 
 # ==== HEADER ==== #
@@ -114,13 +133,15 @@ if uploaded_file is not None:
         with col1:
             st.video(uploaded_file)
             st.markdown("<div class='image-caption'>Video gốc</div>", unsafe_allow_html=True)
-        with col2:
-            if st.button("▶️ Bắt đầu xử lý video"):
-                with st.spinner("⚙️ Đang xử lý video..."):
-                    process_video_streamlit(file_path, model, transform_img, device)
-                st.success("✅ Video đã được xử lý xong!")
+
+        if st.button("▶️ Bắt đầu xử lý video"):
+            with st.spinner("⚙️ Đang xử lý video..."):
+                process_video_streamlit(file_path, model, transform_img, device)
+            st.success("✅ Video đã được xử lý xong!")
+            with col2:
+                st.video(file_path)
                 st.markdown("<div class='image-caption'>Kết quả phân vùng</div>", unsafe_allow_html=True)
-                os.unlink(file_path)
+            os.unlink(file_path)
 
 # ==== FOOTER ==== #
 st.markdown("<div class='footer'>Developed by <b>Trần Quý Thế – 20THXD1</b></div>", unsafe_allow_html=True)
