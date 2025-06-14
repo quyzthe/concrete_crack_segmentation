@@ -12,12 +12,47 @@ from unetutils import (
     process_video_streamlit
 )
 
-st.set_page_config(page_title="UNet++ Segmentation Demo", page_icon="🧠", layout="centered")
+# ==== PAGE CONFIG ==== #
+st.set_page_config(
+    page_title="Concrete Crack Prediction – UNet++", 
+    page_icon="🧠", 
+    layout="wide"
+)
 
-st.title("🧠 UNet++ Segmentation Demo")
-st.write("Upload ảnh hoặc video để phân vùng đối tượng (Concrete Crack Prediction)")
+# ==== CUSTOM CSS ==== #
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap');
+    html, body, [class*="css"] {
+        font-family: 'Be Vietnam Pro', sans-serif;
+        background: #f7f9fc;
+    }
+    .block-container {
+        padding-top: 2rem;
+    }
+    .file-info {
+        background-color: #e6f0ff;
+        padding: 0.75rem;
+        border-radius: 10px;
+        border: 1px solid #cce0ff;
+        font-size: 16px;
+        margin-bottom: 1.5rem;
+    }
+    .footer {
+        margin-top: 3rem;
+        font-size: 15px;
+        text-align: center;
+        color: #888;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# ===== LOAD MODEL =====
+# ==== HEADER ==== #
+st.image("https://drive.google.com/uc?export=view&id=1q38YVeS0UzjiIALh9USM7S3vPg7wS04p", width=120)
+st.title("🧠 Concrete Crack Prediction with UNet++")
+st.subheader("Phân vùng vết nứt bê tông từ ảnh hoặc video")
+
+# ==== LOAD MODEL ==== #
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 checkpoint_url = 'https://drive.google.com/uc?id=11OmToI6aOg7ALOAhl5pJ8wmQzJnJRSkW'
 checkpoint_path = 'checkpoint_best.pt'
@@ -32,23 +67,23 @@ transform_img = transforms.Compose([
     transforms.ToTensor()
 ])
 
-# ===== FILE UPLOADER =====
-uploaded_file = st.file_uploader("📁 Chọn file ảnh (PNG/JPG) hoặc video (MP4)", type=["png", "jpg", "jpeg", "mp4"])
+# ==== UPLOADER ==== #
+uploaded_file = st.file_uploader("📁 Chọn ảnh (PNG/JPG) hoặc video (MP4)", type=["png", "jpg", "jpeg", "mp4"])
 
 if uploaded_file is not None:
     with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[-1]) as tmp_file:
         tmp_file.write(uploaded_file.getvalue())
         file_path = tmp_file.name
 
-    st.write(f"**🗂️ Tệp đã chọn:** `{uploaded_file.name}` - {uploaded_file.size / 1024:.1f} KB")
+    st.markdown(f"<div class='file-info'>🗂️ <b>Tệp đã chọn:</b> {uploaded_file.name} – {uploaded_file.size / 1024:.1f} KB</div>", unsafe_allow_html=True)
 
     if uploaded_file.type.startswith('image'):
-        st.subheader("📸 Ảnh gốc và kết quả")
         with st.spinner("🔍 Đang xử lý ảnh..."):
             image = Image.open(file_path).convert('RGB')
             result_image = test_single_image_streamlit(model, image, transform_img, device)
 
-        col1, col2 = st.columns(2)
+        st.subheader("📸 Kết quả phân tích ảnh")
+        col1, col2 = st.columns([1,1], gap="medium")
         with col1:
             st.image(image, caption="Ảnh gốc", use_container_width=True)
         with col2:
@@ -57,8 +92,8 @@ if uploaded_file is not None:
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
-        st.subheader("🎥 Video gốc và kết quả")
-        col1, col2 = st.columns(2)
+        st.subheader("🎥 Kết quả phân tích video")
+        col1, col2 = st.columns([1,1], gap="medium")
         with col1:
             st.video(uploaded_file)
         with col2:
@@ -68,5 +103,5 @@ if uploaded_file is not None:
                 st.success("✅ Video đã được xử lý xong!")
                 os.unlink(file_path)
 
-st.markdown("---")
-st.markdown("**Developed by Trần Quý Thế – 20THXD1**")
+# ==== FOOTER ==== #
+st.markdown("<div class='footer'>Developed by <b>Trần Quý Thế – 20THXD1</b></div>", unsafe_allow_html=True)
