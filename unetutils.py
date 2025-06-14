@@ -408,6 +408,13 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 
+import imageio
+import streamlit as st
+import tempfile
+import numpy as np
+from PIL import Image
+import cv2
+
 def process_video_streamlit(video_path, model, transform, device):
     cap = cv2.VideoCapture(video_path)
 
@@ -415,58 +422,49 @@ def process_video_streamlit(video_path, model, transform, device):
         st.error("❌ Không thể mở video.")
         return None
 
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    fps = cap.get(cv2.CAP_PROP_FPS)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    # Ghi ra file tạm với định dạng .avi
-    with tempfile.NamedTemporaryFile(suffix=".avi", delete=False) as tmp:
+    # File tạm định dạng .mp4
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
         temp_video_path = tmp.name
 
-    # Dùng codec MJPG (ổn định, không cần libx264)
-    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-    out = cv2.VideoWriter(temp_video_path, fourcc, fps, (width, height))
+    writer = imageio.get_writer(temp_video_path, fps=fps)
 
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        # Convert BGR → RGB → PIL để dùng model
         pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         mask = get_predicted_mask(model, pil_img, transform, device)
+        overlaid = overlay_mask_on_frame(frame, mask).astype(np.uint8)
 
-        overlaid = overlay_mask_on_frame(frame, mask)
-        overlaid = overlaid.astype(np.uint8)
-
-        # Resize nếu cần
+        # Đảm bảo đúng kích thước
         if overlaid.shape[:2] != (height, width):
             overlaid = cv2.resize(overlaid, (width, height))
 
-        out.write(overlaid)
+        # Chuyển BGR → RGB (imageio yêu cầu RGB)
+        frame_rgb = cv2.cvtColor(overlaid, cv2.COLOR_BGR2RGB)
+        writer.append_data(frame_rgb)
 
     cap.release()
-    out.release()
+    writer.close()
 
-    # Đọc lại video thành bytes
-    with open(temp_video_path, "rb") as f:
-        video_bytes = f.read()
-
-    video_io = io.BytesIO(video_bytes)
-    video_io.seek(0)
-
-    # Hiển thị video trong Streamlit
+    # Hiển thị video
     st.video(temp_video_path)
 
-    # Nút tải video
-    st.download_button(
-        label="📥 Tải video kết quả",
-        data=video_io.getvalue(),
-        file_name="processed_video.avi",
-        mime="video/avi"
-    )
+    # Cho phép tải về
+    with open(temp_video_path, "rb") as f:
+        st.download_button(
+            label="📥 Tải video kết quả",
+            data=f,
+            file_name="processed_video.mp4",
+            mime="video/mp4"
+        )
 
-    return video_io
+    return temp_video_path
 
 
 
