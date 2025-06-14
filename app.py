@@ -58,17 +58,9 @@ if uploaded_file is not None:
         st.subheader("🎥 Video gốc")
         st.video(uploaded_file)
 
-        # Không nhập thư mục output, tự tạo file temp để lưu kết quả
-        output_dir = tempfile.gettempdir()
-        output_filename = "processed_video.mp4"
-        output_path = os.path.join(output_dir, output_filename)
-
         if st.button("▶️ Bắt đầu xử lý video"):
             with st.spinner("⚙️ Đang xử lý video..."):
-                output_video = process_video_streamlit(file_path, model, transform_img, device, output_path)
-                if output_video is not None:
-                    st.video(output_video)
-                else:
-                    st.error("Xử lý video thất bại.")
+                process_video_streamlit(file_path, model, transform_img, device)
+
 
             os.unlink(file_path)
