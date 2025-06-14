@@ -134,15 +134,16 @@ if uploaded_file is not None:
 
         if st.button("▶️ Bắt đầu xử lý video"):
             with st.spinner("⚙️ Đang xử lý video..."):
-                process_video_streamlit(file_path, model, transform_img, device)
+                output_path = process_video_streamlit(file_path, model, transform_img, device)
             st.success("✅ Video đã được xử lý xong!")
 
             st.subheader("📊 Kết quả phân vùng")
             col1, col2 = st.columns([1,1], gap="large")
             with col1:
-                st.empty()
+                st.video(uploaded_file)
+                st.markdown("<div class='image-caption'>Video gốc</div>", unsafe_allow_html=True)
             with col2:
-                st.video(file_path)
+                st.video(output_path)
                 st.markdown("<div class='image-caption'>Video kết quả</div>", unsafe_allow_html=True)
 
             os.unlink(file_path)
