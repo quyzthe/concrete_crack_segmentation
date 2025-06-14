@@ -122,7 +122,7 @@ st.markdown("---")
 st.markdown(
     """
     <div style='text-align: center; color: #9ca3af; font-size: 0.9em;'>
-        🚀 Được phát triển bằng <b>PyTorch + Streamlit</b> | Thiết kế bởi ChatGPT ✨
+        🚀 Trần Quý Thế - 20THXD1 ✨
     </div>
     """,
     unsafe_allow_html=True
