@@ -37,8 +37,8 @@ st.markdown("""
     .block-container {
         padding: 1rem 2rem;
         margin: auto;
-        width: 95%;
-        background-color: rgba(255,255,255,0.92);
+        width: 96%;
+        background-color: rgba(255,255,255,0.95);
         border-radius: 16px;
         box-shadow: 0 0 12px rgba(0,0,0,0.08);
     }
@@ -62,7 +62,7 @@ st.markdown("""
         padding: 2rem;
         border-radius: 12px;
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         position: relative;
     }
     .hero::after {
@@ -79,22 +79,24 @@ st.markdown("""
     }
     .signature {
         text-align: right;
-        font-size: 0.9rem;
-        color: #666;
-        margin-top: 3rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #444;
+        margin-top: 2rem;
         padding-right: 1rem;
     }
-    .image-container, .video-container {
-        text-align: center;
-        margin-top: 1rem;
-    }
-    .stFileUploader, .stImage, .stVideo, .stMarkdown, .stTextInput, .stSelectbox, .stColumns, .stSpinner, .stSuccess {
+    .stMarkdown, .stFileUploader, .stTextInput, .stSelectbox, .stColumns, .stSpinner, .stSuccess {
         font-size: 1.3rem !important;
+        color: #111 !important;
     }
-    img, video {
+    .stImage, .stVideo {
+        text-align: center;
+    }
+    .stImage img, .stVideo video {
         border-radius: 12px;
-        width: 50% !important;
-        margin: auto;
+        width: 38% !important;
+        display: inline-block;
+        margin: 0 1%;
     }
     .logo {
         position: absolute;
@@ -103,14 +105,15 @@ st.markdown("""
         width: 80px;
     }
     .file-details {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: #333;
-        background: rgba(6,182,212,0.1);
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #0f172a;
+        background: rgba(6,182,212,0.15);
+        padding: 0.75rem 1.2rem;
+        border-radius: 10px;
         margin-top: 1rem;
         display: inline-block;
+        border: 1px solid rgba(6,182,212,0.3);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -156,21 +159,27 @@ if uploaded_file is not None:
         with st.spinner("🔍 Đang phân tích ảnh..."):
             image = Image.open(file_path).convert('RGB')
             result_image = test_single_image_streamlit(model, image, transform_img, device)
-        st.markdown("<div class='image-container'>", unsafe_allow_html=True)
-        st.image(uploaded_file, caption="📷 Ảnh gốc", use_container_width=False)
-        st.image(result_image, caption="🧠 Mặt nạ phân vùng", use_container_width=False)
+        st.markdown("<div class='stImage'>", unsafe_allow_html=True)
+        col1, col2 = st.columns(2, gap="large")
+        with col1:
+            st.image(uploaded_file, caption="📷 Ảnh gốc", use_container_width=True)
+        with col2:
+            st.image(result_image, caption="🧠 Mặt nạ phân vùng", use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
-        st.markdown("<div class='video-container'>", unsafe_allow_html=True)
-        st.video(uploaded_file, format="video/mp4")
+        st.markdown("<div class='stVideo'>", unsafe_allow_html=True)
+        col1, col2 = st.columns(2, gap="large")
+        with col1:
+            st.video(uploaded_file, format="video/mp4")
+        with col2:
+            if st.button("▶️ Bắt đầu xử lý video", use_container_width=True):
+                with st.spinner("🎞️ Đang xử lý video..."):
+                    process_video_streamlit(file_path, model, transform_img, device)
+                st.success("✅ Video đã được xử lý xong!")
+                os.unlink(file_path)
         st.markdown("</div>", unsafe_allow_html=True)
-        if st.button("▶️ Bắt đầu xử lý video", use_container_width=True):
-            with st.spinner("🎞️ Đang xử lý video..."):
-                process_video_streamlit(file_path, model, transform_img, device)
-            st.success("✅ Video đã được xử lý xong!")
-            os.unlink(file_path)
 
 # ======== SIGNATURE ==========
 st.markdown("""
