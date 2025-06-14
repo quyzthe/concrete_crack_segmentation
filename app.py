@@ -21,26 +21,27 @@ st.markdown("""
     <style>
     html, body {
         font-family: 'Be Vietnam Pro', sans-serif;
-        background-color: #f8fafc;
+        background-color: #f0f4f8;
         background-image: url('https://cdn-icons-png.flaticon.com/512/2202/2202112.png'),
                           url('https://cdn-icons-png.flaticon.com/512/2721/2721273.png'),
                           url('https://cdn-icons-png.flaticon.com/512/2869/2869515.png');
         background-repeat: repeat;
-        background-size: 80px;
+        background-size: 60px;
         background-position: top left, top right, bottom left;
     }
     .block-container {
-        padding: 0;
-        margin: 0 auto;
-        width: 100%;
+        padding: 1rem 3rem;
+        margin: auto;
+        width: 90%;
     }
     .stButton > button {
         background: linear-gradient(90deg, #06B6D4, #3B82F6);
         color: white;
         border: none;
-        border-radius: 10px;
-        padding: 0.6em 1.4em;
+        border-radius: 12px;
+        padding: 0.75em 1.6em;
         font-weight: 600;
+        font-size: 1.05rem;
     }
     .stButton > button:hover {
         background: #0284c7;
@@ -48,19 +49,23 @@ st.markdown("""
     .hero {
         background: linear-gradient(90deg, #06B6D4, #3B82F6);
         color: white;
-        padding: 2.5rem 1.5rem;
-        border-radius: 0;
+        padding: 2.5rem 2rem;
+        border-radius: 12px;
         text-align: center;
+        margin-bottom: 2rem;
+    }
+    .stFileUploader, .stImage, .stVideo, .stMarkdown, .stTextInput, .stSelectbox, .stColumns, .stSpinner, .stSuccess {
+        font-size: 1.05rem !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="hero">
-    <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">
+    <h1 style="font-size: 3.4rem; font-weight: 700; margin-bottom: 0.5rem;">
         🧠 UNet++ AI Segmentation
     </h1>
-    <p style="font-size: 1.2rem;">Concrete Crack Prediction - Phân vùng ảnh & video thông minh với mạng học sâu UNet++</p>
+    <p style="font-size: 1.3rem;">Concrete Crack Prediction - Phân vùng ảnh & video thông minh với mạng học sâu UNet++</p>
 </div>
 """, unsafe_allow_html=True)
 
