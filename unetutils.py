@@ -433,7 +433,7 @@ def process_video_streamlit(video_path, model, transform, device):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     # Ghi ra file tạm với định dạng .avi
-    with tempfile.NamedTemporaryFile(suffix=".avi", delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
         temp_video_path = tmp.name
 
     # Dùng codec MJPG (ổn định, không cần libx264)
