@@ -119,11 +119,11 @@ if uploaded_file is not None:
         st.subheader("🖼️ So sánh ảnh trước và sau phân tích")
         col1, col2 = st.columns([1,1], gap="large")
         with col1:
-            st.image(image, use_container_width=True)
-            st.markdown("<div class='image-caption'>Ảnh gốc</div>", unsafe_allow_html=True)
-        with col2:
             st.image(result_image, use_container_width=True)
             st.markdown("<div class='image-caption'>Kết quả phân vùng</div>", unsafe_allow_html=True)
+        with col2:
+            st.image(image, use_container_width=True)
+            st.markdown("<div class='image-caption'>Ảnh gốc</div>", unsafe_allow_html=True)
 
         os.unlink(file_path)
 
