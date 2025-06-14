@@ -129,7 +129,7 @@ if uploaded_file is not None:
 
     elif uploaded_file.type == 'video/mp4':
         st.subheader("🎥 Video gốc")
-        st.video(uploaded_file, use_container_width=True)
+        st.video(file_path, use_container_width=True)
 
         if st.button("▶️ Bắt đầu xử lý video"):
             with st.spinner("⚙️ Đang xử lý video..."):
@@ -142,7 +142,7 @@ if uploaded_file is not None:
                 st.video(output_path, use_container_width=True)
                 st.markdown("<div class='image-caption'>Video kết quả</div>", unsafe_allow_html=True)
             with col2:
-                st.video(uploaded_file, use_container_width=True)
+                st.video(file_path, use_container_width=True)
                 st.markdown("<div class='image-caption'>Video gốc</div>", unsafe_allow_html=True)
 
             os.unlink(file_path)
