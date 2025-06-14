@@ -9,3 +9,4 @@ albumentations
 matplotlib
 scikit-image
 gdown
+imageio[ffmpeg]
