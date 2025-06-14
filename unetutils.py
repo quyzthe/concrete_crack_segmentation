@@ -416,7 +416,7 @@ def process_video_streamlit(video_path, model, transform, device):
     with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
         temp_video_path = tmp.name
 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # codec phổ biến
+    fourcc = cv2.VideoWriter_fourcc(*'H264')  # codec phổ biến
     out = cv2.VideoWriter(temp_video_path, fourcc, fps, (width, height))
 
     while True:
