@@ -75,6 +75,11 @@ st.markdown("""
         50% { transform: translateY(-20px); }
         100% { transform: translateY(0px); }
     }
+    .uploaded-label .stFileUploader label {
+        font-size: 22px !important;
+        font-weight: 600;
+        color: #0d47a1;
+    }
     </style>
     <img src="https://cdn-icons-png.flaticon.com/512/3771/3771522.png" class="icon-float icon1">
     <img src="https://cdn-icons-png.flaticon.com/512/4228/4228727.png" class="icon-float icon2">
@@ -102,7 +107,9 @@ transform_img = transforms.Compose([
 ])
 
 # ==== UPLOADER ==== #
+st.markdown("<div class='uploaded-label'>", unsafe_allow_html=True)
 uploaded_file = st.file_uploader("📁 Chọn ảnh (PNG/JPG) hoặc video (MP4)", type=["png", "jpg", "jpeg", "mp4"])
+st.markdown("</div>", unsafe_allow_html=True)
 
 if uploaded_file is not None:
     with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[-1]) as tmp_file:
