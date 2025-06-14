@@ -347,7 +347,7 @@ def process_video(video_path, model, transform, device, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     # Dùng codec XVID để hỗ trợ .avi
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    fourcc = cv2.VideoWriter_fourcc(*'H264')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
     frame_idx = 0
