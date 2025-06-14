@@ -395,52 +395,71 @@ import time
 import numpy as np
 from PIL import Image
 
-def process_video_streamlit(video_path, model, transform, device, output_path):
+import io
+import cv2
+from PIL import Image
+import numpy as np
+import tempfile
+
+def process_video_streamlit(video_path, model, transform, device):
     cap = cv2.VideoCapture(video_path)
 
     if not cap.isOpened():
-        print("❌ Không thể mở video.")
-        return None  # Trả về None để báo lỗi cho Streamlit
+        st.error("❌ Không thể mở video.")
+        return None
 
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    # Tạo video tạm trong file để ghi xong rồi đưa vào BytesIO
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+        temp_video_path = tmp.name
 
-    # Codec mp4v khá phổ biến trên Windows cho mp4
-    fourcc = cv2.VideoWriter_fourcc(*'H264')
-    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # codec phổ biến
+    out = cv2.VideoWriter(temp_video_path, fourcc, fps, (width, height))
 
-    frame_idx = 0
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        # Convert BGR → RGB → PIL
+        # Convert BGR → RGB → PIL để dùng model
         pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         mask = get_predicted_mask(model, pil_img, transform, device)
 
-        # Overlay mask lên frame
         overlaid = overlay_mask_on_frame(frame, mask)
         overlaid = overlaid.astype(np.uint8)
 
-        # Resize nếu cần
+        # Resize nếu khác kích thước gốc
         if overlaid.shape[:2] != (height, width):
             overlaid = cv2.resize(overlaid, (width, height))
 
         out.write(overlaid)
 
-        frame_idx += 1
-        if frame_idx % 30 == 0:
-            print(f"✅ Đã xử lý {frame_idx} frame")
-
     cap.release()
     out.release()
 
-    time.sleep(1)  # Đợi ghi xong hoàn toàn
-    return output_path
+    # Đọc lại video vừa tạo thành BytesIO để dùng luôn
+    with open(temp_video_path, "rb") as f:
+        video_bytes = f.read()
+
+    video_io = io.BytesIO(video_bytes)
+    video_io.seek(0)
+
+    # Hiển thị video ngay
+    st.video(video_io)
+
+    # Nút tải video
+    st.download_button(
+        label="📥 Tải video kết quả",
+        data=video_io.getvalue(),
+        file_name="processed_video.mp4",
+        mime="video/mp4"
+    )
+
+    return video_io  # Có thể dùng tiếp nếu cần
+
 
 
 def process_video2(video_path, model, transform_img, device, output_path):
