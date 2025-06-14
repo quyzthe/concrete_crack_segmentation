@@ -28,14 +28,19 @@ st.markdown("""
         background-repeat: repeat;
         background-size: 60px;
         background-position: top left, top right, bottom left;
+        animation: bgMove 15s linear infinite;
+    }
+    @keyframes bgMove {
+        0% { background-position: 0% 0%, 100% 0%, 0% 100%; }
+        100% { background-position: 100% 0%, 0% 0%, 100% 100%; }
     }
     .block-container {
         padding: 1rem 2rem;
         margin: auto;
         width: 95%;
-        background-color: rgba(255,255,255,0.9);
+        background-color: rgba(255,255,255,0.92);
         border-radius: 16px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        box-shadow: 0 0 12px rgba(0,0,0,0.08);
     }
     .stButton > button {
         background: linear-gradient(90deg, #06B6D4, #3B82F6);
@@ -45,9 +50,11 @@ st.markdown("""
         padding: 0.75em 1.6em;
         font-weight: 600;
         font-size: 1.15rem;
+        transition: transform 0.2s;
     }
     .stButton > button:hover {
         background: #0284c7;
+        transform: scale(1.05);
     }
     .hero {
         background: linear-gradient(90deg, #06B6D4, #3B82F6);
@@ -62,22 +69,45 @@ st.markdown("""
         content: "🕶️";
         font-size: 2.5rem;
         position: absolute;
-        animation: bounce 1.2s infinite;
+        animation: spin 3s linear infinite;
         right: 2rem;
         top: 1.5rem;
     }
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .signature {
+        text-align: right;
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 3rem;
+        padding-right: 1rem;
+    }
+    .image-container, .video-container {
+        text-align: center;
+        margin-top: 1rem;
     }
     .stFileUploader, .stImage, .stVideo, .stMarkdown, .stTextInput, .stSelectbox, .stColumns, .stSpinner, .stSuccess {
-        font-size: 1.2rem !important;
+        font-size: 1.3rem !important;
     }
     img, video {
         border-radius: 12px;
-        max-width: 85% !important;
+        width: 65% !important;
+        margin: auto;
+    }
+    .logo {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 80px;
     }
     </style>
+""", unsafe_allow_html=True)
+
+# ======== LOGO KHOA ==========
+st.markdown("""
+<img class="logo" src="https://drive.google.com/uc?id=1q38YVeS0UzjiIALh9USM7S3vPg7wS04p"/>
 """, unsafe_allow_html=True)
 
 st.markdown("""
@@ -112,20 +142,28 @@ if uploaded_file is not None:
         file_path = tmp_file.name
 
     if uploaded_file.type.startswith('image'):
-        col1, col2 = st.columns(2)
-        with col1:
-            st.image(uploaded_file, caption="Ảnh gốc", use_container_width=False)
-        with col2:
-            with st.spinner("🔍 Đang phân tích ảnh..."):
-                image = Image.open(file_path).convert('RGB')
-                result_image = test_single_image_streamlit(model, image, transform_img, device)
-            st.image(result_image, caption="🎯 Mặt nạ phân vùng", use_container_width=False)
+        with st.spinner("🔍 Đang phân tích ảnh..."):
+            image = Image.open(file_path).convert('RGB')
+            result_image = test_single_image_streamlit(model, image, transform_img, device)
+        st.markdown("<div class='image-container'>", unsafe_allow_html=True)
+        st.image(uploaded_file, caption="📷 Ảnh gốc", use_container_width=False)
+        st.image(result_image, caption="🧠 Mặt nạ phân vùng", use_container_width=False)
+        st.markdown("</div>", unsafe_allow_html=True)
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
+        st.markdown("<div class='video-container'>", unsafe_allow_html=True)
         st.video(uploaded_file, format="video/mp4")
+        st.markdown("</div>", unsafe_allow_html=True)
         if st.button("▶️ Bắt đầu xử lý video", use_container_width=True):
             with st.spinner("🎞️ Đang xử lý video..."):
                 process_video_streamlit(file_path, model, transform_img, device)
             st.success("✅ Video đã được xử lý xong!")
             os.unlink(file_path)
+
+# ======== SIGNATURE ==========
+st.markdown("""
+    <div class="signature">
+        Developed by Trần Quý Thế - 20THXD1
+    </div>
+""", unsafe_allow_html=True)
