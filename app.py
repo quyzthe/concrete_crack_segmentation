@@ -82,7 +82,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==== HEADER ==== #
-st.image("https://drive.google.com/uc?export=view&id=1q38YVeS0UzjiIALh9USM7S3vPg7wS04p", width=120)
+st.image("https://drive.google.com/uc?export=view&id=1q38YVeS0UzjiIALh9USM7S3vPg7wS04p", width=2400)
 st.title("🧠 Concrete Crack Prediction with UNet++")
 st.subheader("Phân vùng vết nứt bê tông từ ảnh hoặc video")
 
@@ -137,7 +137,7 @@ if uploaded_file is not None:
                 output_path = process_video_streamlit(file_path, model, transform_img, device)
             st.success("✅ Video đã được xử lý xong!")
 
-            st.subheader("📊 Kết quả phân vùng")
+            st.subheader("📊 So sánh video trước và sau phân tích")
             col1, col2 = st.columns([1,1], gap="large")
             with col1:
                 st.video(uploaded_file)
