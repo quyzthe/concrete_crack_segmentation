@@ -376,12 +376,12 @@ def process_video(video_path, model, transform, device, output_path):
     print(f"✅ Video đã lưu tại: {output_path}")
 
 
-import io
 import cv2
-import streamlit as st
-import imageio.v3 as iio
+import io
+import imageio
 import numpy as np
 from PIL import Image
+import streamlit as st
 
 def process_video_streamlit(video_path, model, transform, device):
     cap = cv2.VideoCapture(video_path)
@@ -401,37 +401,36 @@ def process_video_streamlit(video_path, model, transform, device):
         if not ret:
             break
 
+        # Convert BGR → RGB → PIL
         pil_img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         mask = get_predicted_mask(model, pil_img, transform, device)
 
+        # Overlay mask lên frame
         overlaid = overlay_mask_on_frame(frame, mask)
         overlaid = overlaid.astype(np.uint8)
 
+        # Resize nếu cần
         if overlaid.shape[:2] != (height, width):
             overlaid = cv2.resize(overlaid, (width, height))
 
-        # imageio expects RGB
-        frames.append(cv2.cvtColor(overlaid, cv2.COLOR_BGR2RGB))
+        # Chuyển từ BGR → RGB để ghi video đúng màu
+        overlaid_rgb = cv2.cvtColor(overlaid, cv2.COLOR_BGR2RGB)
+        frames.append(overlaid_rgb)
 
     cap.release()
 
-    # Ghi video vào bộ nhớ RAM (BytesIO) bằng imageio và ffmpeg
+    # Ghi video vào RAM
     video_bytesio = io.BytesIO()
-    iio.imwrite(
-        video_bytesio,
-        frames,
-        plugin="ffmpeg",
-        format="mp4",
-        fps=fps,
-        codec="libx264"
-    )
+    with imageio.get_writer(video_bytesio, format='ffmpeg', mode='I', fps=fps, codec='libx264') as writer:
+        for f in frames:
+            writer.append_data(f)
+
     video_bytesio.seek(0)
 
-    # Hiển thị video
-    st.subheader("📽️ Kết quả video đã xử lý")
+    # Hiển thị video trong Streamlit
     st.video(video_bytesio)
 
-    # Nút tải về
+    # Nút tải về video
     st.download_button(
         label="📥 Tải video kết quả",
         data=video_bytesio.getvalue(),
@@ -440,6 +439,7 @@ def process_video_streamlit(video_path, model, transform, device):
     )
 
     return video_bytesio
+
 
 
 
