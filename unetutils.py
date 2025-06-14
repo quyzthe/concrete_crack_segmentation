@@ -153,9 +153,15 @@ def test_single_image(model, image, transform, device):
     plt.tight_layout()
     plt.show()
 
+from PIL import Image, ImageOps
+import numpy as np
+import torch.nn.functional as F
+from io import BytesIO
+
 def test_single_image_streamlit(model, image, transform, device):
     """
     Trả về ảnh mask chồng lên ảnh gốc dưới dạng PIL.Image để hiển thị bằng st.image().
+    Mask giá trị 1 sẽ có màu xanh neon, giá trị 0 sẽ trong suốt.
     """
     original_size = image.size  # (width, height)
     image_tensor = transform(image).unsqueeze(0).to(device)
@@ -170,23 +176,21 @@ def test_single_image_streamlit(model, image, transform, device):
             pred_mask.unsqueeze(1).float(),
             size=(original_size[1], original_size[0]),
             mode='nearest'
-        ).squeeze().cpu().numpy()
+        ).squeeze().cpu().numpy().astype(np.uint8)
 
-    # Tạo ảnh chồng mask bằng matplotlib
-    fig, ax = plt.subplots(figsize=(6, 6))
-    ax.imshow(image)
-    ax.imshow(pred_mask_resized, cmap='jet', alpha=0.5)
-    ax.axis('off')
+    # Tạo ảnh overlay RGBA: neon green nếu mask = 1, trong suốt nếu mask = 0
+    overlay_rgba = np.zeros((original_size[1], original_size[0], 4), dtype=np.uint8)
+    overlay_rgba[pred_mask_resized == 1] = [57, 255, 20, 255]  # RGB = neon green, A = 255
 
-    # Lưu vào bộ nhớ đệm
-    buf = BytesIO()
-    plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
-    plt.close(fig)
-    buf.seek(0)
-    
-    # Đọc lại bằng PIL
-    result_image = Image.open(buf)
-    return result_image
+    # Chuyển ảnh gốc sang RGBA
+    image_rgba = image.convert("RGBA")
+
+    # Chồng mask lên ảnh gốc
+    overlay = Image.fromarray(overlay_rgba, mode="RGBA")
+    result = Image.alpha_composite(image_rgba, overlay)
+
+    return result
+
 
 
 def boxes_overlap(box1, box2, threshold=10):
