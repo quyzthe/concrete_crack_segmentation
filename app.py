@@ -26,22 +26,22 @@ st.markdown("""
     html, body, [class*="css"] {
         font-family: 'Be Vietnam Pro', sans-serif;
         background: url('https://www.transparenttextures.com/patterns/cubes.png');
-        background-color: #f4f9ff;
+        background-color: #f0f8ff;
         color: #222;
     }
     .block-container {
         padding-top: 2rem;
     }
     .file-info {
-        background-color: #e3f2fd;
+        background-color: #e1f5fe;
         padding: 1rem;
         border-radius: 12px;
-        border: 1px solid #64b5f6;
+        border: 1px solid #29b6f6;
         font-size: 18px;
         margin-bottom: 1.5rem;
-        color: #0d47a1;
+        color: #01579b;
         font-weight: 500;
-        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
     }
     .footer {
         margin-top: 3rem;
@@ -138,6 +138,10 @@ if uploaded_file is not None:
             with st.spinner("⚙️ Đang xử lý video..."):
                 process_video_streamlit(file_path, model, transform_img, device)
             st.success("✅ Video đã được xử lý xong!")
+            col1, col2 = st.columns([1,1], gap="large")
+            with col1:
+                st.video(uploaded_file)
+                st.markdown("<div class='image-caption'>Video gốc</div>", unsafe_allow_html=True)
             with col2:
                 st.video(file_path)
                 st.markdown("<div class='image-caption'>Kết quả phân vùng</div>", unsafe_allow_html=True)
