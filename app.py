@@ -128,6 +128,9 @@ if uploaded_file is not None:
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
+        st.subheader("🎥 Video gốc")
+        st.video(uploaded_file, use_container_width=True)
+
         if st.button("▶️ Bắt đầu xử lý video"):
             with st.spinner("⚙️ Đang xử lý video..."):
                 output_path = process_video_streamlit(file_path, model, transform_img, device)
