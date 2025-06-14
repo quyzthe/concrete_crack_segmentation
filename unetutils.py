@@ -401,6 +401,13 @@ from PIL import Image
 import numpy as np
 import tempfile
 
+import cv2
+import io
+import tempfile
+import streamlit as st
+import numpy as np
+from PIL import Image
+
 def process_video_streamlit(video_path, model, transform, device):
     cap = cv2.VideoCapture(video_path)
 
@@ -412,11 +419,12 @@ def process_video_streamlit(video_path, model, transform, device):
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    # Tạo video tạm trong file để ghi xong rồi đưa vào BytesIO
-    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
+    # Ghi ra file tạm với định dạng .avi
+    with tempfile.NamedTemporaryFile(suffix=".avi", delete=False) as tmp:
         temp_video_path = tmp.name
 
-    fourcc = cv2.VideoWriter_fourcc(*'H264')  # codec phổ biến
+    # Dùng codec MJPG (ổn định, không cần libx264)
+    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
     out = cv2.VideoWriter(temp_video_path, fourcc, fps, (width, height))
 
     while True:
@@ -431,7 +439,7 @@ def process_video_streamlit(video_path, model, transform, device):
         overlaid = overlay_mask_on_frame(frame, mask)
         overlaid = overlaid.astype(np.uint8)
 
-        # Resize nếu khác kích thước gốc
+        # Resize nếu cần
         if overlaid.shape[:2] != (height, width):
             overlaid = cv2.resize(overlaid, (width, height))
 
@@ -440,25 +448,26 @@ def process_video_streamlit(video_path, model, transform, device):
     cap.release()
     out.release()
 
-    # Đọc lại video vừa tạo thành BytesIO để dùng luôn
+    # Đọc lại video thành bytes
     with open(temp_video_path, "rb") as f:
         video_bytes = f.read()
 
     video_io = io.BytesIO(video_bytes)
     video_io.seek(0)
 
-    # Hiển thị video ngay
+    # Hiển thị video trong Streamlit
     st.video(temp_video_path)
 
     # Nút tải video
     st.download_button(
         label="📥 Tải video kết quả",
         data=video_io.getvalue(),
-        file_name="processed_video.mp4",
-        mime="video/mp4"
+        file_name="processed_video.avi",
+        mime="video/avi"
     )
 
-    return video_io  # Có thể dùng tiếp nếu cần
+    return video_io
+
 
 
 
