@@ -82,7 +82,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==== HEADER ==== #
-st.image("https://drive.google.com/uc?export=view&id=1q38YVeS0UzjiIALh9USM7S3vPg7wS04p", width=2400)
+st.image("https://drive.google.com/uc?export=view&id=1q38YVeS0UzjiIALh9USM7S3vPg7wS04p", width=120)
 st.title("🧠 Concrete Crack Prediction with UNet++")
 st.subheader("Phân vùng vết nứt bê tông từ ảnh hoặc video")
 
