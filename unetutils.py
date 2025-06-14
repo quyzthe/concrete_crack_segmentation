@@ -384,7 +384,6 @@ import numpy as np
 from PIL import Image
 import streamlit as st
 
-from .your_module import get_predicted_mask, overlay_mask_on_frame  # Cập nhật đúng module của bạn
 
 def process_video_streamlit(video_path, model, transform, device):
     cap = cv2.VideoCapture(video_path)
