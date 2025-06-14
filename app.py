@@ -142,10 +142,10 @@ if uploaded_file is not None:
                 st.video(output_path)
                 st.markdown("<div class='image-caption'>Video kết quả</div>", unsafe_allow_html=True)
             with col2:
-                st.video(file_path)
-                st.markdown("<div class='image-caption'>Video gốc</div>", unsafe_allow_html=True)
+                st.empty()  # Xóa video gốc khỏi hiển thị thêm lần nữa
 
-            os.unlink(file_path)
+        else:
+            st.markdown("<div class='image-caption'>Nhấn nút để xử lý và hiển thị kết quả</div>", unsafe_allow_html=True)
 
 # ==== FOOTER ==== #
 st.markdown("<div class='footer'>Developed by <b>Trần Quý Thế – 20THXD1</b></div>", unsafe_allow_html=True)
