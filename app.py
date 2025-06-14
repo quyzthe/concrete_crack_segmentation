@@ -45,14 +45,6 @@ st.markdown("""
     .stButton > button:hover {
         background: #0284c7;
     }
-    .upload-info {
-        background: #ecfeff;
-        border-left: 5px solid #06B6D4;
-        padding: 12px 18px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-    }
     .hero {
         background: linear-gradient(90deg, #06B6D4, #3B82F6);
         color: white;
@@ -90,17 +82,6 @@ transform_img = transforms.Compose([
 uploaded_file = st.file_uploader("📁 Tải ảnh (PNG/JPG) hoặc video (MP4)", type=["png", "jpg", "jpeg", "mp4"])
 
 if uploaded_file is not None:
-    file_size_kb = len(uploaded_file.getvalue()) / 1024
-    file_info_html = f"""
-    <div class="upload-info">
-        <b>📂 Tên tệp:</b> {uploaded_file.name} <br>
-        <b>🧾 Loại:</b> {uploaded_file.type} <br>
-        <b>📦 Kích thước:</b> {file_size_kb:.2f} KB <br>
-        <b>⏰ Tải lên lúc:</b> {time.strftime('%Y-%m-%d %H:%M:%S')}
-    </div>
-    """
-    st.markdown(file_info_html, unsafe_allow_html=True)
-
     with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[-1]) as tmp_file:
         tmp_file.write(uploaded_file.getvalue())
         file_path = tmp_file.name
@@ -108,12 +89,12 @@ if uploaded_file is not None:
     if uploaded_file.type.startswith('image'):
         col1, col2 = st.columns(2)
         with col1:
-            st.image(uploaded_file, caption="Ảnh gốc", use_column_width=True)
+            st.image(uploaded_file, caption="Ảnh gốc", use_container_width=True)
         with col2:
             with st.spinner("🔍 Đang phân tích ảnh..."):
                 image = Image.open(file_path).convert('RGB')
                 result_image = test_single_image_streamlit(model, image, transform_img, device)
-            st.image(result_image, caption="🎯 Mặt nạ phân vùng", use_column_width=True)
+            st.image(result_image, caption="🎯 Mặt nạ phân vùng", use_container_width=True)
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
