@@ -128,24 +128,19 @@ if uploaded_file is not None:
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
-        st.subheader("🎥 Video gốc")
-        st.video(file_path)
+        video_col1, video_col2 = st.columns([1, 1])
+        with video_col2:
+            st.subheader("🎥 Video gốc")
+            st.video(file_path)
 
         if st.button("▶️ Bắt đầu xử lý video"):
             with st.spinner("⚙️ Đang xử lý video..."):
                 output_path = process_video_streamlit(file_path, model, transform_img, device)
             st.success("✅ Video đã được xử lý xong!")
 
-            st.subheader("📊 So sánh video trước và sau phân tích")
-            col1, col2 = st.columns([1,1], gap="large")
-            with col1:
-                st.video(output_path)
-                st.markdown("<div class='image-caption'>Video kết quả</div>", unsafe_allow_html=True)
-            with col2:
-                st.empty()  # Xóa video gốc khỏi hiển thị thêm lần nữa
-
-        else:
-            st.markdown("<div class='image-caption'>Nhấn nút để xử lý và hiển thị kết quả</div>", unsafe_allow_html=True)
+            video_col1.video(output_path)
+            video_col1.markdown("<div class='image-caption'>Video kết quả</div>", unsafe_allow_html=True)
+            video_col2.markdown("<div class='image-caption'>Video gốc</div>", unsafe_allow_html=True)
 
 # ==== FOOTER ==== #
 st.markdown("<div class='footer'>Developed by <b>Trần Quý Thế – 20THXD1</b></div>", unsafe_allow_html=True)
