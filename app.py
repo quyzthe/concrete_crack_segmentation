@@ -25,29 +25,39 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap');
     html, body, [class*="css"] {
         font-family: 'Be Vietnam Pro', sans-serif;
-        background: linear-gradient(135deg, #fdfdfd 0%, #f3f7fb 100%);
+        background: linear-gradient(to bottom, #ffffff 0%, #e6f0ff 100%);
+        color: #222;
     }
     .block-container {
         padding-top: 2rem;
     }
     .file-info {
-        background-color: #f0f7ff;
-        padding: 0.75rem 1rem;
-        border-radius: 12px;
-        border: 1px solid #2196f3;
+        background-color: #e3f2fd;
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid #64b5f6;
         font-size: 17px;
         margin-bottom: 1.5rem;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-        color: #004085;
+        color: #0d47a1;
+        font-weight: 500;
+        box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.08);
     }
     .footer {
         margin-top: 3rem;
         font-size: 15px;
         text-align: center;
-        color: #444;
+        color: #333;
     }
     h1, h2, h3, .stTitle, .stSubheader {
-        color: #001c48;
+        color: #0d47a1;
+        font-weight: 700;
+    }
+    .image-caption {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 8px;
+        color: #0d47a1;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -87,25 +97,29 @@ if uploaded_file is not None:
             image = Image.open(file_path).convert('RGB')
             result_image = test_single_image_streamlit(model, image, transform_img, device)
 
-        st.subheader("📸 Kết quả phân tích ảnh")
-        col1, col2 = st.columns([1,1], gap="medium")
+        st.subheader("🖼️ So sánh ảnh trước và sau phân tích")
+        col1, col2 = st.columns([1,1], gap="large")
         with col1:
-            st.image(image, caption="Ảnh gốc", use_container_width=True)
+            st.image(image, use_container_width=True)
+            st.markdown("<div class='image-caption'>Ảnh gốc</div>", unsafe_allow_html=True)
         with col2:
-            st.image(result_image, caption="Kết quả phân vùng", use_container_width=True)
+            st.image(result_image, use_container_width=True)
+            st.markdown("<div class='image-caption'>Kết quả phân vùng</div>", unsafe_allow_html=True)
 
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
-        st.subheader("🎥 Kết quả phân tích video")
-        col1, col2 = st.columns([1,1], gap="medium")
+        st.subheader("🎞️ So sánh video trước và sau phân tích")
+        col1, col2 = st.columns([1,1], gap="large")
         with col1:
             st.video(uploaded_file)
+            st.markdown("<div class='image-caption'>Video gốc</div>", unsafe_allow_html=True)
         with col2:
             if st.button("▶️ Bắt đầu xử lý video"):
                 with st.spinner("⚙️ Đang xử lý video..."):
                     process_video_streamlit(file_path, model, transform_img, device)
                 st.success("✅ Video đã được xử lý xong!")
+                st.markdown("<div class='image-caption'>Kết quả phân vùng</div>", unsafe_allow_html=True)
                 os.unlink(file_path)
 
 # ==== FOOTER ==== #
