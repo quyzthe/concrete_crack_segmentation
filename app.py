@@ -93,7 +93,7 @@ st.markdown("""
     }
     img, video {
         border-radius: 12px;
-        width: 65% !important;
+        width: 50% !important;
         margin: auto;
     }
     .logo {
@@ -101,6 +101,16 @@ st.markdown("""
         top: 10px;
         left: 10px;
         width: 80px;
+    }
+    .file-details {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #333;
+        background: rgba(6,182,212,0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        display: inline-block;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -137,6 +147,7 @@ transform_img = transforms.Compose([
 uploaded_file = st.file_uploader("📁 Tải ảnh (PNG/JPG) hoặc video (MP4)", type=["png", "jpg", "jpeg", "mp4"])
 
 if uploaded_file is not None:
+    st.markdown(f"<div class='file-details'>🗂️ Tệp đã chọn: <strong>{uploaded_file.name}</strong> ({uploaded_file.size / 1024:.1f} KB)</div>", unsafe_allow_html=True)
     with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[-1]) as tmp_file:
         tmp_file.write(uploaded_file.getvalue())
         file_path = tmp_file.name
