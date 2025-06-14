@@ -5,6 +5,7 @@ from PIL import Image
 import torch
 from torchvision import transforms
 import gdown
+import time
 
 from unetutils import (
     create_and_load_unet_model,
@@ -12,140 +13,113 @@ from unetutils import (
     process_video_streamlit
 )
 
-# ==== PAGE CONFIG ==== #
-st.set_page_config(
-    page_title="Concrete Crack Prediction – UNet++", 
-    page_icon="🧠", 
-    layout="wide"
-)
+st.set_page_config(page_title="UNet++ AI Segmentation", page_icon="🧠", layout="wide")
 
-# ==== CUSTOM CSS WITH BACKGROUND IMAGE AND FLOATING ICONS ==== #
+# ======== STYLE & HEADER ==========
 st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap');
-    html, body, [class*="css"] {
+    html, body {
         font-family: 'Be Vietnam Pro', sans-serif;
-        background: url('https://www.transparenttextures.com/patterns/cubes.png');
-        background-color: #f9fcff;
-        color: #222;
+        background-color: #f8fafc;
+        background-image: url('https://cdn-icons-png.flaticon.com/512/2202/2202112.png'),
+                          url('https://cdn-icons-png.flaticon.com/512/2721/2721273.png'),
+                          url('https://cdn-icons-png.flaticon.com/512/2869/2869515.png');
+        background-repeat: repeat;
+        background-size: 80px;
+        background-position: top left, top right, bottom left;
     }
     .block-container {
-        padding-top: 2rem;
+        padding: 0;
+        margin: 0 auto;
+        width: 100%;
     }
-    .file-info {
-        background-color: #e1f5fe;
-        padding: 1rem;
-        border-radius: 12px;
-        border: 1px solid #29b6f6;
-        font-size: 18px;
-        margin-bottom: 1.5rem;
-        color: #01579b;
-        font-weight: 500;
-        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.05);
-    }
-    .footer {
-        margin-top: 3rem;
-        font-size: 15px;
-        text-align: center;
-        color: #333;
-    }
-    h1, h2, h3, .stTitle, .stSubheader {
-        color: #0d47a1;
-        font-weight: 700;
-    }
-    .image-caption {
-        text-align: center;
-        font-size: 18px;
+    .stButton > button {
+        background: linear-gradient(90deg, #06B6D4, #3B82F6);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.6em 1.4em;
         font-weight: 600;
-        margin-top: 8px;
-        color: #0d47a1;
     }
-    .icon-float {
-        position: fixed;
-        animation: float 6s ease-in-out infinite;
-        z-index: 0;
-        opacity: 0.08;
+    .stButton > button:hover {
+        background: #0284c7;
     }
-    .icon1 { top: 20px; left: 40px; width: 40px; }
-    .icon2 { top: 70%; right: 30px; width: 50px; animation-delay: 2s; }
-    .icon3 { bottom: 20px; left: 50%; width: 45px; animation-delay: 4s; }
-
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-        100% { transform: translateY(0px); }
+    .upload-info {
+        background: #ecfeff;
+        border-left: 5px solid #06B6D4;
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    .hero {
+        background: linear-gradient(90deg, #06B6D4, #3B82F6);
+        color: white;
+        padding: 2.5rem 1.5rem;
+        border-radius: 0;
+        text-align: center;
     }
     </style>
-    <img src="https://cdn-icons-png.flaticon.com/512/3771/3771522.png" class="icon-float icon1">
-    <img src="https://cdn-icons-png.flaticon.com/512/4228/4228727.png" class="icon-float icon2">
-    <img src="https://cdn-icons-png.flaticon.com/512/3222/3222800.png" class="icon-float icon3">
 """, unsafe_allow_html=True)
 
-# ==== HEADER ==== #
-st.image("https://drive.google.com/uc?export=view&id=1q38YVeS0UzjiIALh9USM7S3vPg7wS04p", width=120)
-st.title("🧠 Concrete Crack Prediction with UNet++")
-st.subheader("Phân vùng vết nứt bê tông từ ảnh hoặc video")
+st.markdown("""
+<div class="hero">
+    <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 0.5rem;">
+        🧠 UNet++ AI Segmentation
+    </h1>
+    <p style="font-size: 1.2rem;">Concrete Crack Prediction - Phân vùng ảnh & video thông minh với mạng học sâu UNet++</p>
+</div>
+""", unsafe_allow_html=True)
 
-# ==== LOAD MODEL ==== #
+# ======== LOAD MODEL ==========
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 checkpoint_url = 'https://drive.google.com/uc?id=11OmToI6aOg7ALOAhl5pJ8wmQzJnJRSkW'
 checkpoint_path = 'checkpoint_best.pt'
 if not os.path.exists(checkpoint_path):
-    with st.spinner('Đang tải model checkpoint...'):
+    with st.spinner('⏬ Đang tải mô hình...'):
         gdown.download(checkpoint_url, checkpoint_path, quiet=False)
 
 model = create_and_load_unet_model(checkpoint_path, device)
-
 transform_img = transforms.Compose([
     transforms.Resize((256, 256)),
     transforms.ToTensor()
 ])
 
-# ==== UPLOADER ==== #
-uploaded_file = st.file_uploader("📁 Chọn ảnh (PNG/JPG) hoặc video (MP4)", type=["png", "jpg", "jpeg", "mp4"])
+# ======== FILE UPLOAD ==========
+uploaded_file = st.file_uploader("📁 Tải ảnh (PNG/JPG) hoặc video (MP4)", type=["png", "jpg", "jpeg", "mp4"])
 
 if uploaded_file is not None:
+    file_size_kb = len(uploaded_file.getvalue()) / 1024
+    file_info_html = f"""
+    <div class="upload-info">
+        <b>📂 Tên tệp:</b> {uploaded_file.name} <br>
+        <b>🧾 Loại:</b> {uploaded_file.type} <br>
+        <b>📦 Kích thước:</b> {file_size_kb:.2f} KB <br>
+        <b>⏰ Tải lên lúc:</b> {time.strftime('%Y-%m-%d %H:%M:%S')}
+    </div>
+    """
+    st.markdown(file_info_html, unsafe_allow_html=True)
+
     with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[-1]) as tmp_file:
         tmp_file.write(uploaded_file.getvalue())
         file_path = tmp_file.name
 
-    st.markdown(f"<div class='file-info'>🗂️ <b>Tệp đã chọn:</b> {uploaded_file.name} – {uploaded_file.size / 1024:.1f} KB</div>", unsafe_allow_html=True)
-
     if uploaded_file.type.startswith('image'):
-        with st.spinner("🔍 Đang xử lý ảnh..."):
-            image = Image.open(file_path).convert('RGB')
-            result_image = test_single_image_streamlit(model, image, transform_img, device)
-
-        st.subheader("🖼️ So sánh ảnh trước và sau phân tích")
-        col1, col2 = st.columns([1,1], gap="large")
+        col1, col2 = st.columns(2)
         with col1:
-            st.image(result_image, use_container_width=True)
-            st.markdown("<div class='image-caption'>Kết quả phân vùng</div>", unsafe_allow_html=True)
+            st.image(uploaded_file, caption="Ảnh gốc", use_column_width=True)
         with col2:
-            st.image(image, use_container_width=True)
-            st.markdown("<div class='image-caption'>Ảnh gốc</div>", unsafe_allow_html=True)
-
+            with st.spinner("🔍 Đang phân tích ảnh..."):
+                image = Image.open(file_path).convert('RGB')
+                result_image = test_single_image_streamlit(model, image, transform_img, device)
+            st.image(result_image, caption="🎯 Mặt nạ phân vùng", use_column_width=True)
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
-        st.subheader("🎥 Video gốc")
-        st.video(uploaded_file, use_container_width=True)
-
-        if st.button("▶️ Bắt đầu xử lý video"):
-            with st.spinner("⚙️ Đang xử lý video..."):
-                output_path = process_video_streamlit(file_path, model, transform_img, device)
+        st.video(uploaded_file)
+        if st.button("▶️ Bắt đầu xử lý video", use_container_width=True):
+            with st.spinner("🎞️ Đang xử lý video..."):
+                process_video_streamlit(file_path, model, transform_img, device)
             st.success("✅ Video đã được xử lý xong!")
-
-            st.subheader("📊 So sánh video trước và sau phân tích")
-            col1, col2 = st.columns([1,1], gap="large")
-            with col1:
-                st.video(output_path, use_container_width=True)
-                st.markdown("<div class='image-caption'>Video kết quả</div>", unsafe_allow_html=True)
-            with col2:
-                st.video(uploaded_file, use_container_width=True)
-                st.markdown("<div class='image-caption'>Video gốc</div>", unsafe_allow_html=True)
-
             os.unlink(file_path)
-
-# ==== FOOTER ==== #
-st.markdown("<div class='footer'>Developed by <b>Trần Quý Thế – 20THXD1</b></div>", unsafe_allow_html=True)
