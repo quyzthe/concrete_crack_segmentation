@@ -25,20 +25,20 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap');
     html, body, [class*="css"] {
         font-family: 'Be Vietnam Pro', sans-serif;
-        background: linear-gradient(135deg, #f1f3f9 0%, #e5ecf6 100%);
+        background: linear-gradient(135deg, #fdfdfd 0%, #f3f7fb 100%);
     }
     .block-container {
         padding-top: 2rem;
     }
     .file-info {
-        background-color: #ffffff;
-        padding: 0.75rem;
-        border-radius: 10px;
-        border: 2px dashed #007bff;
-        font-size: 16px;
+        background-color: #f0f7ff;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        border: 1px solid #2196f3;
+        font-size: 17px;
         margin-bottom: 1.5rem;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        color: #003366;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        color: #004085;
     }
     .footer {
         margin-top: 3rem;
@@ -47,7 +47,7 @@ st.markdown("""
         color: #444;
     }
     h1, h2, h3, .stTitle, .stSubheader {
-        color: #002855;
+        color: #001c48;
     }
     </style>
 """, unsafe_allow_html=True)
