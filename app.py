@@ -30,9 +30,12 @@ st.markdown("""
         background-position: top left, top right, bottom left;
     }
     .block-container {
-        padding: 1rem 3rem;
+        padding: 1rem 2rem;
         margin: auto;
-        width: 90%;
+        width: 95%;
+        background-color: rgba(255,255,255,0.9);
+        border-radius: 16px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     .stButton > button {
         background: linear-gradient(90deg, #06B6D4, #3B82F6);
@@ -41,7 +44,7 @@ st.markdown("""
         border-radius: 12px;
         padding: 0.75em 1.6em;
         font-weight: 600;
-        font-size: 1.05rem;
+        font-size: 1.15rem;
     }
     .stButton > button:hover {
         background: #0284c7;
@@ -49,13 +52,30 @@ st.markdown("""
     .hero {
         background: linear-gradient(90deg, #06B6D4, #3B82F6);
         color: white;
-        padding: 2.5rem 2rem;
+        padding: 2rem;
         border-radius: 12px;
         text-align: center;
         margin-bottom: 2rem;
+        position: relative;
+    }
+    .hero::after {
+        content: "🕶️";
+        font-size: 2.5rem;
+        position: absolute;
+        animation: bounce 1.2s infinite;
+        right: 2rem;
+        top: 1.5rem;
+    }
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
     .stFileUploader, .stImage, .stVideo, .stMarkdown, .stTextInput, .stSelectbox, .stColumns, .stSpinner, .stSuccess {
-        font-size: 1.05rem !important;
+        font-size: 1.2rem !important;
+    }
+    img, video {
+        border-radius: 12px;
+        max-width: 85% !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -65,7 +85,7 @@ st.markdown("""
     <h1 style="font-size: 3.4rem; font-weight: 700; margin-bottom: 0.5rem;">
         🧠 UNet++ AI Segmentation
     </h1>
-    <p style="font-size: 1.3rem;">Concrete Crack Prediction - Phân vùng ảnh & video thông minh với mạng học sâu UNet++</p>
+    <p style="font-size: 1.4rem;">Concrete Crack Prediction - Phân vùng ảnh & video thông minh với mạng học sâu UNet++</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -94,16 +114,16 @@ if uploaded_file is not None:
     if uploaded_file.type.startswith('image'):
         col1, col2 = st.columns(2)
         with col1:
-            st.image(uploaded_file, caption="Ảnh gốc", use_container_width=True)
+            st.image(uploaded_file, caption="Ảnh gốc", use_container_width=False)
         with col2:
             with st.spinner("🔍 Đang phân tích ảnh..."):
                 image = Image.open(file_path).convert('RGB')
                 result_image = test_single_image_streamlit(model, image, transform_img, device)
-            st.image(result_image, caption="🎯 Mặt nạ phân vùng", use_container_width=True)
+            st.image(result_image, caption="🎯 Mặt nạ phân vùng", use_container_width=False)
         os.unlink(file_path)
 
     elif uploaded_file.type == 'video/mp4':
-        st.video(uploaded_file)
+        st.video(uploaded_file, format="video/mp4")
         if st.button("▶️ Bắt đầu xử lý video", use_container_width=True):
             with st.spinner("🎞️ Đang xử lý video..."):
                 process_video_streamlit(file_path, model, transform_img, device)
