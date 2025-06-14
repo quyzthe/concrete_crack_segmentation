@@ -10,4 +10,5 @@ albumentations
 matplotlib
 scikit-image
 gdown
+imageio>=2.9
 imageio-ffmpeg
