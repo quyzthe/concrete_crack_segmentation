@@ -448,7 +448,7 @@ def process_video_streamlit(video_path, model, transform, device):
     video_io.seek(0)
 
     # Hiển thị video ngay
-    st.video(video_io)
+    st.video(temp_video_path)
 
     # Nút tải video
     st.download_button(
