@@ -437,7 +437,7 @@ def process_video_streamlit(video_path, model, transform, device):
         temp_video_path = tmp.name
 
     # Dùng codec MJPG (ổn định, không cần libx264)
-    fourcc = cv2.VideoWriter_fourcc(*'VP80')
+    fourcc = cv2.VideoWriter_fourcc(*'x264')
     out = cv2.VideoWriter(temp_video_path, fourcc, fps, (width, height))
 
     while True:
