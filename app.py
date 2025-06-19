@@ -94,7 +94,7 @@ st.subheader("Phân vùng vết nứt bê tông từ ảnh hoặc video")
 # ==== LOAD MODEL ==== #
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # checkpoint_url = 'https://drive.google.com/uc?id=11OmToI6aOg7ALOAhl5pJ8wmQzJnJRSkW'
-checkpoint_url='https://drive.google.com/file/d/15dxFjfu-0kUJ-8_LbC9xml1qwFg6A9ze/view?usp=sharing'
+checkpoint_url='https://drive.usercontent.google.com/download?id=15dxFjfu-0kUJ-8_LbC9xml1qwFg6A9ze&export=download&authuser=0'
 checkpoint_path = 'checkpoint_best.pt'
 if not os.path.exists(checkpoint_path):
     with st.spinner('Đang tải model checkpoint...'):
